@@ -10,9 +10,6 @@ def connect_db(app):
     db.init_app(app)
 
 
-default = 'https://thecontemporarypet.com/wp-content/themes/contemporarypet/images/default.png'
-
-
 class Pet(db.Model):
     __tablename__ = 'pet'
 
@@ -23,7 +20,7 @@ class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     species = db.Column(db.String, nullable=False)
-    photo_url = db.Column(db.String, nullable=False, default=default)
+    photo_url = db.Column(db.String, nullable=True)
     age = db.Column(db.Integer, nullable=True)
     notes = db.Column(db.String, nullable=True)
     available = db.Column(db.Boolean, nullable=False, default=True)

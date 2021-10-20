@@ -1,6 +1,6 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 from models import db, connect_db, Pet
-from forms import AddPetForm
+from forms import AddPetForm, EditPetForm
 
 app = Flask(__name__)
 
@@ -21,17 +21,53 @@ def index():
 def add_pet():
     form = AddPetForm()
 
-    if form.is_submitted():
-        print("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+    if form.validate_on_submit():
+        pet_name = form.pet_name.data
+        species = form.species.data
+        photo_url = form.photo_url.data
+        age = form.age.data
+        notes = form.notes.data
 
-    if form.validate():
-        print('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV')
+        new_pet = Pet(name=pet_name, species=species,
+                      photo_url=photo_url, age=age, notes=notes)
+        db.session.add(new_pet)
+        db.session.commit()
 
-    print(form.errors)
-    # if form.validate_on_submit():
-    #     return redirect('/')
-    # else:
-    return render_template('add.html', form=form)
+        flash(f'New pet {pet_name} added successfully!')
+        return redirect('/')
+    else:
+        return render_template('add.html', form=form)
+
+
+@app.route('/<int:id>', methods=['GET', 'POST'])
+def pet(id):
+    pet = Pet.query.get_or_404(id)
+    form = EditPetForm()
+    # availability = db.session.query(Pet.available)
+    # form.availability.choices = availability
+    # form(pet)
+
+    if form.validate_on_submit():
+        photo_url = form.photo_url.data
+        notes = form.notes.data
+        available = form.availability.data
+
+        if photo_url != '':
+            pet.photo_url = photo_url
+        if notes != '':
+            pet.notes = notes
+        if available == 'True':
+            pet.available = True
+        else:
+            pet.available = False
+
+        db.session.add(pet)
+        db.session.commit()
+
+        flash(f'Pet edited successfully!')
+        return redirect('/')
+
+    return render_template('pet.html', pet=pet, form=form)
 
 # @app.route('/users')
 # def Users():

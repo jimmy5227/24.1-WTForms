@@ -2,17 +2,28 @@
 {% block title %} Homepage {% endblock %}
 {% block content %}
 <h1>Welcome to Pet Adoption Agency</h1>
+
+{% for msg in get_flashed_messages() %}
+<div class="alert-success">
+    {{msg}}
+</div>
+<p></p>
+{% endfor %}
+
 <div>
     <h2>Current Pets</h2>
     <ul>
         {% for pet in listed_pets %}
         <li>
-            {{pet.name}}
+            <a href='/{{pet.id}}'><p class="base">{{pet.name}}</p></a>
             <img src="{{pet.photo_url}}">
-            <b>{{pet.available}}</b>
+            {% if pet.available == True %}
+            <b class="lower-base">Available</b>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
+    <a href="/add"><button>Add Pet</button></a>
 </div>
 
 {% endblock %}
